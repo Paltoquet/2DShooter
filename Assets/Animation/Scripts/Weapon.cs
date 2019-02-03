@@ -23,6 +23,7 @@ public class Weapon : MonoBehaviour
     public float yOffset;
 
     private bool m_isFliped;
+    private float m_angle;
     private float m_nextShot;
     private float m_muzzleFlashDuration = 0.2f;
 
@@ -43,12 +44,12 @@ public class Weapon : MonoBehaviour
         Vector2 direction = (mouse - new Vector2(originalPixelPosition.x, originalPixelPosition.y)).normalized;
 
         Vector2 facingDirection = new Vector2(1.0f, 0.0f);
-        float angle = Vector2.SignedAngle(facingDirection, direction) * Mathf.Deg2Rad;
+        m_angle = Vector2.SignedAngle(facingDirection, direction) * Mathf.Deg2Rad;
 
-        float facingAngle = Mathf.Abs(angle) > Mathf.PI / 2 ? -1 * (angle - (angle - (Mathf.PI / 2)) * 2) : angle;
+        float facingAngle = Mathf.Abs(m_angle) > Mathf.PI / 2 ? -1 * (m_angle - (m_angle - (Mathf.PI / 2)) * 2) : m_angle;
         float absFacingAngle = Mathf.Abs(facingAngle);
         float rot = Mathf.Rad2Deg * facingAngle;
-        bool shouldFlip = m_isFliped ? Mathf.Abs(angle) <= Mathf.PI / 2 : Mathf.Abs(angle) > Mathf.PI / 2;
+        bool shouldFlip = m_isFliped ? Mathf.Abs(m_angle) <= Mathf.PI / 2 : Mathf.Abs(m_angle) > Mathf.PI / 2;
 
         if (shouldFlip)
         {
@@ -67,7 +68,7 @@ public class Weapon : MonoBehaviour
         //transform.position += offset;
         transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, rot));
 
-        Debug.Log("coucou " + angle + " " + (angle % (Mathf.PI / 2)));
+        Debug.Log("coucou " + m_angle + " " + (m_angle % (Mathf.PI / 2)));
 
         if (vertical > 0)
         {
@@ -80,45 +81,48 @@ public class Weapon : MonoBehaviour
 
         if(Input.GetButtonDown("Fire1") && fireRate == 0)
         {
-            onShoot();
+            onShoot(direction);
         }
         if(Input.GetButton("Fire1") && fireRate > 0)
         {
-            onShoot();
+            onShoot(direction);
         }
 
     }
 
-    void onShoot()
+    void onShoot(Vector2 direction)
     {
         if (fireRate == 0.0f)
         {
-            Shoot();
+            Shoot(direction);
         }
         else
         {
             if(Time.time > m_nextShot)
             {
                 m_nextShot = Time.time + 1 / fireRate;
-                Shoot();
+                Shoot(direction);
             }
         }
     }
 
-    void Shoot()
+    void Shoot(Vector2 direction)
     {
         Vector2 firePos = new Vector2(weaponTip.position.x, weaponTip.position.y);
-        Vector2 dir = Vector2.right;
-        RaycastHit2D hit = Physics2D.Raycast(firePos, dir, range, damageableLayer);
+        Vector2 mouse = Input.mousePosition;
+
+        RaycastHit2D hit = Physics2D.Raycast(firePos, direction, range, damageableLayer);
         //Debug.DrawRay(firePos, dir * range, Color.yellow, 1f);
-        DrawBullet();
+        DrawBullet(direction);
     }
 
-    void DrawBullet()
+    void DrawBullet(Vector2 direction)
     {
-        Quaternion rot = Quaternion.Euler(0, 0, 0);
+        Quaternion rot = Quaternion.Euler(0, 0, m_angle * Mathf.Rad2Deg);
 
-        Instantiate(bulletPrefab, weaponTip.position, rot);
+        GameObject obj = Instantiate(bulletPrefab, weaponTip.position, rot);
+        Bullet bullet = obj.GetComponent<Bullet>();
+        bullet.setDirection(new Vector3(direction.x, direction.y, 0.0f));
 
         StartCoroutine(MuzzleFlash());
     }

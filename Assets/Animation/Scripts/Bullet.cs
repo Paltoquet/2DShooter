@@ -8,6 +8,8 @@ public class Bullet : MonoBehaviour
     public int speed = 250;
     public float lifeDuration = 1.0f;
 
+    private Vector3 m_direction;
+
 
     private void OnEnable()
     {
@@ -24,5 +26,10 @@ public class Bullet : MonoBehaviour
     {
         yield return new WaitForSeconds(duration);
         Destroy(gameObject);
+    }
+
+    public void setDirection(Vector3 direction)
+    {
+        m_direction = direction;
     }
 }
