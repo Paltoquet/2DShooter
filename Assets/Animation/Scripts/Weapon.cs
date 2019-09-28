@@ -4,16 +4,14 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-
-    public Camera cam;
     public GameObject character;
     public GameObject bulletPrefab;
     public Transform weaponTip;
     public SpriteRenderer muzzleFlashRend;
 
-
     public float fireRate = 0.5f;
-    public float damage = 25.0f;
+    public float damage = 2.0f;
+    public float hitForce = 20.0f;
     public LayerMask damageableLayer;
     public float range = 100.0f;
 
@@ -35,13 +33,9 @@ public class Weapon : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public void updateOrientation(Vector2 direction)
     {
         int vertical = (int)Input.GetAxis("Vertical");
-        Vector2 mouse = Input.mousePosition;
-        Vector3 originalPosition = transform.position;  //new Vector3(xOffset, yOffset, 0.0f);
-        Vector2 originalPixelPosition = cam.WorldToScreenPoint(originalPosition);
-        Vector2 direction = (mouse - new Vector2(originalPixelPosition.x, originalPixelPosition.y)).normalized;
 
         Vector2 facingDirection = new Vector2(1.0f, 0.0f);
         m_angle = Vector2.SignedAngle(facingDirection, direction) * Mathf.Deg2Rad;
@@ -68,7 +62,7 @@ public class Weapon : MonoBehaviour
         //transform.position += offset;
         transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, rot));
 
-        Debug.Log("coucou " + m_angle + " " + (m_angle % (Mathf.PI / 2)));
+        //Debug.Log("coucou " + m_angle + " " + (m_angle % (Mathf.PI / 2)));
 
         if (vertical > 0)
         {
@@ -78,19 +72,9 @@ public class Weapon : MonoBehaviour
         {
             this.gameObject.transform.position += new Vector3(0, -0.05f, 0);
         }
-
-        if(Input.GetButtonDown("Fire1") && fireRate == 0)
-        {
-            onShoot(direction);
-        }
-        if(Input.GetButton("Fire1") && fireRate > 0)
-        {
-            onShoot(direction);
-        }
-
     }
 
-    void onShoot(Vector2 direction)
+    public void requestShoot(Vector2 direction)
     {
         if (fireRate == 0.0f)
         {
@@ -112,7 +96,19 @@ public class Weapon : MonoBehaviour
         Vector2 mouse = Input.mousePosition;
 
         RaycastHit2D hit = Physics2D.Raycast(firePos, direction, range, damageableLayer);
-        //Debug.DrawRay(firePos, dir * range, Color.yellow, 1f);
+        //Debug.DrawRay(firePos, direction * range, Color.yellow, 1f);
+        if(hit.collider != null)
+        {
+            Debug.Log("finded");
+            GameObject enemy = hit.collider.gameObject;
+            HealthController health = enemy.GetComponent<HealthController>();
+            Rigidbody2D body = enemy.GetComponent<Rigidbody2D>();
+            health.Damage(damage);
+            if(body != null)
+            {
+                body.AddForce(-hit.normal * hitForce);
+            }
+        }
         DrawBullet(direction);
     }
 
