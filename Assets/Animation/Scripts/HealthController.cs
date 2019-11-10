@@ -5,16 +5,13 @@ using UnityEngine;
 public class HealthController : MonoBehaviour
 {
     public float baseHealth = 100.0f;
-    public Sprite final;
-
-    private SpriteRenderer m_renderer;
-    private float m_currentHealth;
+    protected float m_currentHealth;
+    protected bool m_isDead = false;
 
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
         m_currentHealth = baseHealth;
-        m_renderer = GetComponent<SpriteRenderer>();
     }
 
     public void Damage(float damage)
@@ -26,10 +23,9 @@ public class HealthController : MonoBehaviour
         }
     }
 
-    void Die()
+    protected virtual void Die()
     {
-        Destroy(gameObject, 1);
-        m_renderer.sprite = final;
+        m_isDead = true;
     }
 
 }

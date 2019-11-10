@@ -13,7 +13,7 @@ public class Weapon : MonoBehaviour
     public float damage = 2.0f;
     public float hitForce = 20.0f;
     public LayerMask damageableLayer;
-    public float range = 100.0f;
+    public float range = 40.0f;
 
     public float maxHorizontalDistance;
     public float maxVerticalDistance;
@@ -102,11 +102,14 @@ public class Weapon : MonoBehaviour
             Debug.Log("finded");
             GameObject enemy = hit.collider.gameObject;
             HealthController health = enemy.GetComponent<HealthController>();
-            Rigidbody2D body = enemy.GetComponent<Rigidbody2D>();
-            health.Damage(damage);
-            if(body != null)
+            if (health)
             {
-                body.AddForce(-hit.normal * hitForce);
+                Rigidbody2D body = enemy.GetComponent<Rigidbody2D>();
+                health.Damage(damage);
+                if (body != null)
+                {
+                    body.AddForce(-hit.normal * hitForce);
+                }
             }
         }
         DrawBullet(direction);
