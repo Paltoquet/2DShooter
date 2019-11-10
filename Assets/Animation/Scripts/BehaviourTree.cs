@@ -105,6 +105,23 @@ public class SelectorNode<T> : CompositeNode<T>
     }
 }
 
+public class ParralelNode<T> : CompositeNode<T>
+{
+    public override ProcessResult process()
+    {
+        ProcessResult result = ProcessResult.Success;
+        foreach (var children in m_children)
+        {
+            var childrenResult = children.process();
+            if(childrenResult == ProcessResult.Failed)
+            {
+                result = childrenResult;
+            }
+        }
+        return result;
+    }
+}
+
 public abstract class ConditionalLeaf<T> : LeafNode<T>
 {
     ConditionalLeaf()

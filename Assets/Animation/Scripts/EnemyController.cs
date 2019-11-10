@@ -23,8 +23,9 @@ public class EnemyController : MotionController
     private bool m_shouldJump = false;
 
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         m_behaviour = GetComponent<EnemyBehaviour>();
         m_animator = GetComponent<Animator>();
         m_rigidBody = GetComponent<Rigidbody2D>();
@@ -46,7 +47,7 @@ public class EnemyController : MotionController
         Vector2 direction = m_currentDirection.x != 0.0f ? Mathf.Sign(m_currentDirection.x) * new Vector2(1.0f, 0.0f) : m_currentDirection;
         m_targetVelocity = direction * maxSpeed;
 
-        if(lookAt.y > 0.5 && m_grounded && m_shouldJump)
+        if(lookAt.y > 0.2 && m_grounded && m_shouldJump)
         {
             m_shouldJump = false;
             velocity.y = jumpTakeOffSpeed;

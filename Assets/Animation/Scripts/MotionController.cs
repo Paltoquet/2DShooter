@@ -27,7 +27,7 @@ public class MotionController : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
+    protected virtual void Start()
     {
         m_contactFilter.useTriggers = false;
         m_contactFilter.SetLayerMask(Physics2D.GetLayerCollisionMask(gameObject.layer));
@@ -69,7 +69,7 @@ public class MotionController : MonoBehaviour
     {
         float distance = move.magnitude;
 
-        if(distance > m_minMoveDistance)
+        if (distance > m_minMoveDistance)
         {
             int count = m_rigidBody.Cast(move, m_contactFilter, hitBuffer, distance + m_shellRadius);
             hitBufferList.Clear();
@@ -93,7 +93,7 @@ public class MotionController : MonoBehaviour
                 }
 
                 float projection = Vector2.Dot(velocity, normal);
-                if(projection < 0)
+                if (projection < 0)
                 {
                     velocity = velocity - projection * normal;
                 }

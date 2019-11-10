@@ -17,10 +17,14 @@ public class EnemyBehaviour : BehaviourTree<EnemyBehaviour>
 
     public EnemyBehaviour()
     {
-        root = new SequentialNode<EnemyBehaviour>();
+        root = new ParralelNode<EnemyBehaviour>();
+
+        var displacementNode = new SequentialNode<EnemyBehaviour>();
         m_moveNode = new MoveAtPlayerNode();
-        root.addNode(new FindPlayerNode());
-        root.addNode(m_moveNode);
+        displacementNode.addNode(new FindPlayerNode());
+        displacementNode.addNode(m_moveNode);
+
+        root.addNode(displacementNode);
         root.addNode(new AimAtPlayerNode());
     }
 
@@ -195,7 +199,27 @@ public class AimAtPlayerNode : LeafNode<EnemyBehaviour>
 
     public override ProcessResult process()
     {
-        m_tree.getWeapon().requestShoot(new Vector2(1, 0));
+        var currentPosition = m_tree.getModel().transform.position;
+        var playerPosition = m_tree.getPlayer().transform.position;
+        var weapon = m_tree.getWeapon();
+        var range = weapon.range;
+        var shootingDirection = playerPosition - currentPosition;
+        var distanceToPlayer = shootingDirection.magnitude;
+
+        if (true) { //distanceToPlayer < range)
+            RaycastHit2D hit = Physics2D.Raycast(currentPosition, shootingDirection, range);
+            if (hit.collider != null)
+            {
+                GameObject collider = hit.collider.gameObject;
+                if (collider.tag == "Player")
+                {
+                    shootingDirection = shootingDirection.normalized;
+                    weapon.updateOrientation(shootingDirection);
+                    weapon.requestShoot(shootingDirection);
+                }
+            }
+        }
+
         return ProcessResult.Success;
     }
 }
