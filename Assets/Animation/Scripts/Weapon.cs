@@ -14,6 +14,8 @@ public class Weapon : MonoBehaviour
     public LayerMask damageableLayer;
     public float range = 40.0f;
 
+    public float maxRecoil;
+    public float recoilFallOff = 0.05f;
     public float maxHorizontalDistance;
     public float maxVerticalDistance;
     public float xOffset;
@@ -24,9 +26,13 @@ public class Weapon : MonoBehaviour
 
     private Transform leftGrip;
     private Transform rightGrip;
+
     private bool m_isFliped;
     private float m_angle;
+    private float m_currentRecoilPercentage = 0.0f;
     private float m_nextShot;
+    private Vector2 m_shootingDirection;
+    private Vector3 m_originalTransform;
     private float m_muzzleFlashDuration = 0.2f;
 
     void OnEnable()
@@ -34,19 +40,24 @@ public class Weapon : MonoBehaviour
         m_weaponRender = GetComponent<SpriteRenderer>();
         leftGrip = transform.Find("LeftGrip");
         rightGrip = transform.Find("RightGrip");
+
         m_isFliped = false;
+        m_shootingDirection = new Vector2(0.0f, 0.0f);
         muzzleFlashRend.color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+
+        m_originalTransform = this.gameObject.transform.localPosition;
     }
 
     // Update is called once per frame
     public void updateOrientation(Vector2 direction)
     {
+        m_shootingDirection = direction;
         int vertical = (int)Input.GetAxis("Vertical");
 
         Vector2 facingDirection = new Vector2(1.0f, 0.0f);
         m_angle = Vector2.SignedAngle(facingDirection, direction) * Mathf.Deg2Rad;
 
-        float facingAngle = Mathf.Abs(m_angle) > Mathf.PI / 2 ? -1 * (m_angle - (m_angle - (Mathf.PI / 2)) * 2) : m_angle;
+        float facingAngle = Mathf.Abs(m_angle) > Mathf.PI / 2 ? -1 * (Mathf.PI - m_angle) : m_angle;
         float absFacingAngle = Mathf.Abs(facingAngle);
         float rot = Mathf.Rad2Deg * facingAngle;
         bool shouldFlip = m_isFliped ? Mathf.Abs(m_angle) <= Mathf.PI / 2 : Mathf.Abs(m_angle) > Mathf.PI / 2;
@@ -66,9 +77,8 @@ public class Weapon : MonoBehaviour
         Vector3 offset = new Vector3(xOffset - previousXOffset, yOffset - previousYOffset, 0.0f);
         offset.x = m_isFliped ? -offset.x : offset.x;
         //transform.position += offset;
-        transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, rot));
 
-        //Debug.Log("coucou " + m_angle + " " + (m_angle % (Mathf.PI / 2)));
+        transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, rot));
 
         if (vertical > 0)
         {
@@ -95,9 +105,24 @@ public class Weapon : MonoBehaviour
             }
         }
     }
+    
+    public void updateRecoil()
+    {
+        m_currentRecoilPercentage = m_currentRecoilPercentage > recoilFallOff ? m_currentRecoilPercentage - recoilFallOff : 0.0f;
+        if(m_currentRecoilPercentage > 1.0f)
+        {
+            m_currentRecoilPercentage = 1.0f;
+        }
+        float offset = maxRecoil * m_currentRecoilPercentage;
+        Vector2 shootingDirection = m_isFliped ? new Vector2(-1.0f * m_shootingDirection.x, m_shootingDirection.y) : m_shootingDirection;
+        Vector2 currentRecoil = -1.0f * shootingDirection * offset;
+        this.gameObject.transform.localPosition = m_originalTransform;
+        this.gameObject.transform.localPosition += new Vector3(currentRecoil.x, currentRecoil.y, 0.0f);
+    }
 
     void Shoot(Vector2 direction)
     {
+        m_currentRecoilPercentage += m_weaponParams.recoil;
         Vector2 firePos = new Vector2(weaponTip.position.x, weaponTip.position.y);
         Vector2 mouse = Input.mousePosition;
 
@@ -105,7 +130,6 @@ public class Weapon : MonoBehaviour
         //Debug.DrawRay(firePos, direction * range, Color.yellow, 1f);
         if(hit.collider != null)
         {
-            Debug.Log("finded");
             GameObject enemy = hit.collider.gameObject;
             HealthController health = enemy.GetComponent<HealthController>();
             if (health)

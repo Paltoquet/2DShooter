@@ -55,6 +55,8 @@ public class PlayerController : MotionController
             }
             setCurrentWeapon();
         }
+
+        weapon.updateRecoil();
     }
 
     protected override void ComputeInputVelocity()
