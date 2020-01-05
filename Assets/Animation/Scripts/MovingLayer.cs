@@ -9,9 +9,9 @@ public class MovingLayer : ScrollingLayer
 
     private float m_viewPortWidth;
 
-    protected override void Start()
+    protected override void OnEnable()
     {
-        base.Start();
+        base.OnEnable();
         m_viewPortWidth = camera.orthographicSize * 2 * camera.aspect; ;
     }
 

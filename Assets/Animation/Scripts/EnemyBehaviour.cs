@@ -109,7 +109,7 @@ public class FindPlayerNode : LeafNode<EnemyBehaviour>
     {
         m_isComputing = false;
         m_isPathComputed = true;
-        Debug.Log("Yay, we got a path back. Did it have an error? " + p.error);
+        //Debug.Log("Yay, we got a path back. Did it have an error? " + p.error);
         m_hasFoundPlayer = !p.error;
         m_tree.setCurrentPath(p);
     }
@@ -145,11 +145,14 @@ public class MoveAtPlayerNode : LeafNode<EnemyBehaviour>
             float yDistance = Mathf.Abs(currentPosition.y - m_currentPath.vectorPath[i].y);
             if (xDistance < xDistanceTreshHold)
             {
-                var currentPlateformerNode = (PlateformerPointNode)m_currentPath.path[i];
-                distanceToCurrentWayPoint = distanceToWaypoint;
-                previousNode = (PlateformerPointNode)m_currentPath.path[i];
-                m_currentWaypoint = i == (m_currentPath.vectorPath.Count - 1) ? i : i+1;
-                nextNode = (PlateformerPointNode)m_currentPath.path[m_currentWaypoint];
+                if (i < m_currentPath.path.Count)
+                {
+                    var currentPlateformerNode = (PlateformerPointNode)m_currentPath.path[i];
+                    distanceToCurrentWayPoint = distanceToWaypoint;
+                    previousNode = (PlateformerPointNode)m_currentPath.path[i];
+                    m_currentWaypoint = i == (m_currentPath.vectorPath.Count - 1) ? i : i + 1;
+                    nextNode = (PlateformerPointNode)m_currentPath.path[m_currentWaypoint];
+                }
             }
         }
 

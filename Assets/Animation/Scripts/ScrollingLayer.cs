@@ -26,7 +26,7 @@ public class ScrollingLayer : MonoBehaviour
     protected float m_rightBound;
 
     // Start is called before the first frame update
-    protected virtual void Start()
+    protected virtual void OnEnable()
     {
         m_sprites = new List<SpriteRenderer>();
         for (int i = 0; i < transform.childCount; i++)
