@@ -32,14 +32,14 @@ public class PlayerController : MotionController
     {
         base.updatePosition();
         Vector2 mouse = Input.mousePosition;
-        Vector3 originalPosition = transform.position;
+        Vector3 originalPosition = weapon.transform.position;
         Vector2 originalPixelPosition = cam.WorldToScreenPoint(originalPosition);
         Vector2 direction = (mouse - new Vector2(originalPixelPosition.x, originalPixelPosition.y)).normalized;
         weapon.updateOrientation(direction);
 
         if (Input.GetButton("Fire1"))
         {
-            weapon.requestShoot(direction);
+            weapon.requestShoot(mouse);
         }
 
         if(Input.mouseScrollDelta.y != 0)
@@ -80,6 +80,7 @@ public class PlayerController : MotionController
         bool isMoving = m_targetVelocity.magnitude != 0.0f;
         m_animator.SetBool("moving", isMoving);
     }
+
     protected void setCurrentWeapon()
     {
         if (m_currentWeaponSlot < m_weapons.Count) {
