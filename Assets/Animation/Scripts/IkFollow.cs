@@ -6,7 +6,7 @@ using Anima2D;
 public class IkFollow : MonoBehaviour
 {
 
-    public Bone2D target;
+    public Transform target;
 
     // Start is called before the first frame update
     void Start()
@@ -17,6 +17,6 @@ public class IkFollow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.gameObject.transform.position = target.transform.position;
+        this.gameObject.transform.position = target.position;
     }
 }
