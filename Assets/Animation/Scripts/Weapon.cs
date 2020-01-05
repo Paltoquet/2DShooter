@@ -9,7 +9,6 @@ public class Weapon : MonoBehaviour
     public Transform weaponTip;
     public SpriteRenderer muzzleFlashRend;
 
-    public float fireRate = 0.5f;
     public float damage = 2.0f;
     public float hitForce = 20.0f;
     public LayerMask damageableLayer;
@@ -20,14 +19,21 @@ public class Weapon : MonoBehaviour
     public float xOffset;
     public float yOffset;
 
+    private SpriteRenderer m_weaponRender;
+    private WeaponParams m_weaponParams;
+
+    private Transform leftGrip;
+    private Transform rightGrip;
     private bool m_isFliped;
     private float m_angle;
     private float m_nextShot;
     private float m_muzzleFlashDuration = 0.2f;
 
-    // Start is called before the first frame update
-    void Awake()
+    void OnEnable()
     {
+        m_weaponRender = GetComponent<SpriteRenderer>();
+        leftGrip = transform.Find("LeftGrip");
+        rightGrip = transform.Find("RightGrip");
         m_isFliped = false;
         muzzleFlashRend.color = new Color(0.0f, 0.0f, 0.0f, 0.0f);
     }
@@ -76,7 +82,7 @@ public class Weapon : MonoBehaviour
 
     public void requestShoot(Vector2 direction)
     {
-        if (fireRate == 0.0f)
+        if (m_weaponParams.fireRate == 0.0f)
         {
             Shoot(direction);
         }
@@ -84,7 +90,7 @@ public class Weapon : MonoBehaviour
         {
             if(Time.time > m_nextShot)
             {
-                m_nextShot = Time.time + 1 / fireRate;
+                m_nextShot = Time.time + 1 / m_weaponParams.fireRate;
                 Shoot(direction);
             }
         }
@@ -117,11 +123,18 @@ public class Weapon : MonoBehaviour
 
     void DrawBullet(Vector2 direction)
     {
-        Quaternion rot = Quaternion.Euler(0, 0, m_angle * Mathf.Rad2Deg);
+        var nbProjectiles = m_weaponParams.nbProjectiles;
+        var prefab = m_weaponParams.bulletPrefab;
 
-        GameObject obj = Instantiate(bulletPrefab, weaponTip.position, rot);
-        Bullet bullet = obj.GetComponent<Bullet>();
-        bullet.setDirection(new Vector3(direction.x, direction.y, 0.0f));
+        for(int projectile = 0; projectile < nbProjectiles; projectile++)
+        {
+            var randomAngle = Random.Range(-m_weaponParams.projectileRadius, m_weaponParams.projectileRadius);
+            var currentAngle = m_angle + randomAngle;
+            Quaternion rot = Quaternion.Euler(0, 0, currentAngle * Mathf.Rad2Deg);
+            GameObject obj = Instantiate(prefab, weaponTip.position, rot);
+            Bullet bullet = obj.GetComponent<Bullet>();
+            bullet.setDirection(new Vector3(direction.x, direction.y, 0.0f));
+        }
 
         StartCoroutine(MuzzleFlash());
     }
@@ -134,6 +147,14 @@ public class Weapon : MonoBehaviour
             localScale.x = localScale.x * -1;
             obj.transform.localScale = localScale;
         }
+    }
+
+    public void setCurrentWeapon(WeaponParams weapon)
+    {
+        m_weaponParams = weapon;
+        m_weaponRender.sprite = m_weaponParams.sprite;
+        leftGrip.localPosition = new Vector3(m_weaponParams.leftHandleOffset.x, m_weaponParams.leftHandleOffset.y, leftGrip.position.z);
+        rightGrip.localPosition = new Vector3(m_weaponParams.rightHandleOffset.x, m_weaponParams.rightHandleOffset.y, leftGrip.position.z);
     }
 
     IEnumerator MuzzleFlash()

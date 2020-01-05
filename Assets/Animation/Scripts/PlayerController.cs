@@ -10,13 +10,22 @@ public class PlayerController : MotionController
     public float maxSpeed = 7;
     public float jumpTakeOffSpeed = 7;
 
+    private int m_currentWeaponSlot = 0;
+
     private Animator m_animator;
+    private List<WeaponParams> m_weapons;
 
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
         m_animator = GetComponent<Animator>();
+
+        m_weapons = new List<WeaponParams>();
+        m_weapons.Add(WeaponCollection.Instance.getParams("riffle"));
+        m_weapons.Add(WeaponCollection.Instance.getParams("shotgun"));
+
+        setCurrentWeapon();
     }
 
     void Update()
@@ -31,6 +40,20 @@ public class PlayerController : MotionController
         if (Input.GetButton("Fire1"))
         {
             weapon.requestShoot(direction);
+        }
+
+        if(Input.mouseScrollDelta.y != 0)
+        {
+            int delta = Input.mouseScrollDelta.y > 0 ? 1 : -1;
+            m_currentWeaponSlot += delta;
+            if(m_currentWeaponSlot > m_weapons.Count)
+            {
+                m_currentWeaponSlot = 0;
+            } else if (m_currentWeaponSlot < 0)
+            {
+                m_currentWeaponSlot = m_weapons.Count - 1;
+            }
+            setCurrentWeapon();
         }
     }
 
@@ -57,4 +80,12 @@ public class PlayerController : MotionController
         bool isMoving = m_targetVelocity.magnitude != 0.0f;
         m_animator.SetBool("moving", isMoving);
     }
+    protected void setCurrentWeapon()
+    {
+        if (m_currentWeaponSlot < m_weapons.Count) {
+            var currentWeapon = m_weapons[m_currentWeaponSlot];
+            weapon.setCurrentWeapon(currentWeapon);
+        }
+    }
+        
 }

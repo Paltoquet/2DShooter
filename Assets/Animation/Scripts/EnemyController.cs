@@ -32,6 +32,9 @@ public class EnemyController : MotionController
         m_seeker = GetComponent<Seeker>();
 
         m_behaviour.init(this.gameObject, this, weapon, player, m_seeker);
+
+        var currentWeapon = WeaponCollection.Instance.getParams("riffle");
+        weapon.setCurrentWeapon(currentWeapon);
     }
 
     void Update()
