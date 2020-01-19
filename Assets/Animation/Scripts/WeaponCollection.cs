@@ -16,7 +16,7 @@ public class WeaponCollection : MonoBehaviour
         m_datas = new Dictionary<string, WeaponParams>();
 
         var riffleParams = new WeaponParams("riffle", 30.0f, 30.0f, 0.02f, 100, 0.25f, new Vector2(-1.0f, -0.45f), new Vector2(0.2f, -0.4f));
-        var shotgunParams = new WeaponParams("shotgun", 10.0f, 75.0f, 0.02f, 30, 0.8f, new Vector2(-1.0f, -0.45f), new Vector2(1.2f, -0.12f));
+        var shotgunParams = new WeaponParams("shotgun", 10.0f, 75.0f, 0.02f, 30, 1.0f, new Vector2(-1.0f, -0.45f), new Vector2(1.2f, -0.12f));
 
         Weapons.Add(riffleParams);
         Weapons.Add(shotgunParams);

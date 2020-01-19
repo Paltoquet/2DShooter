@@ -126,28 +126,17 @@ public class Weapon : MonoBehaviour
         Vector2 firePos = new Vector2(weaponTip.position.x, weaponTip.position.y);
         Vector2 mouse = Input.mousePosition;
 
-        RaycastHit2D hit = Physics2D.Raycast(firePos, direction, range, damageableLayer);
+        //RaycastHit2D hit = Physics2D.Raycast(firePos, direction, range, damageableLayer);
         //Debug.DrawRay(firePos, direction * range, Color.yellow, 1f);
-        if(hit.collider != null)
-        {
-            GameObject enemy = hit.collider.gameObject;
-            HealthController health = enemy.GetComponent<HealthController>();
-            if (health)
-            {
-                Rigidbody2D body = enemy.GetComponent<Rigidbody2D>();
-                health.Damage(damage);
-                if (body != null)
-                {
-                    body.AddForce(-hit.normal * hitForce);
-                }
-            }
-        }
+        
         DrawBullet(direction);
     }
 
     void DrawBullet(Vector2 direction)
     {
         var nbProjectiles = m_weaponParams.nbProjectiles;
+        var damage = m_weaponParams.damage;
+        var hitForce = m_weaponParams.hitForce;
         var prefab = m_weaponParams.bulletPrefab;
 
         for(int projectile = 0; projectile < nbProjectiles; projectile++)
@@ -158,6 +147,9 @@ public class Weapon : MonoBehaviour
             GameObject obj = Instantiate(prefab, weaponTip.position, rot);
             Bullet bullet = obj.GetComponent<Bullet>();
             bullet.setDirection(new Vector3(direction.x, direction.y, 0.0f));
+            bullet.damageableLayer = damageableLayer;
+            bullet.damage = damage;
+            bullet.hitForce = hitForce;
         }
 
         StartCoroutine(MuzzleFlash());
