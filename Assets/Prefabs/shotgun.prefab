@@ -11,10 +11,11 @@ GameObject:
   - component: {fileID: 2485271069074872907}
   - component: {fileID: 2485271069074872906}
   - component: {fileID: 2485271069074872909}
+  - component: {fileID: 3397635076113756013}
   - component: {fileID: 3209793939464269140}
   m_Layer: 11
   m_Name: shotgun
-  m_TagString: Sauv
+  m_TagString: Pickable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -102,6 +103,19 @@ Rigidbody2D:
   m_SleepingMode: 0
   m_CollisionDetection: 1
   m_Constraints: 0
+--- !u!114 &3397635076113756013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2485271069074872911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd75b6de0859c76469f8c80c15c82ede, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weapon: shotgun
 --- !u!61 &3209793939464269140
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -119,7 +133,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 8.2, y: 2.17}
+    oldSize: {x: 5.857143, y: 1.55}
     newSize: {x: 8.2, y: 2.17}
     adaptiveTilingThreshold: 0.5
     drawMode: 0

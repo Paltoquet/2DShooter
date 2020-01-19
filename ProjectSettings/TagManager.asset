@@ -8,6 +8,7 @@ TagManager:
   - Character
   - TileMap
   - Enemy
+  - Pickable
   layers:
   - Default
   - TransparentFX

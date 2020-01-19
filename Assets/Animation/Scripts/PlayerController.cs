@@ -23,7 +23,7 @@ public class PlayerController : MotionController
 
         m_weapons = new List<WeaponParams>();
         m_weapons.Add(WeaponCollection.Instance.getParams("riffle"));
-        m_weapons.Add(WeaponCollection.Instance.getParams("shotgun"));
+        //m_weapons.Add(WeaponCollection.Instance.getParams("shotgun"));
 
         setCurrentWeapon();
     }
@@ -81,6 +81,37 @@ public class PlayerController : MotionController
 
         bool isMoving = m_targetVelocity.magnitude != 0.0f;
         m_animator.SetBool("moving", isMoving);
+    }
+
+    // called when the cube hits the floor
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        Debug.Log("found " + col.gameObject);
+        if(col.gameObject.tag == "Pickable")
+        {
+            Pickable picked = col.gameObject.GetComponent<Pickable>();
+            string weaponName = picked.weapon;
+            bool hasWeapons = false;
+            foreach(var weapon in m_weapons)
+            {
+                if(weapon.name == weaponName)
+                {
+                    hasWeapons = true;
+                    break;
+                }
+            }
+
+            Debug.Log("found a weapon " + weaponName);
+
+            if (!hasWeapons)
+            {
+                m_weapons.Add(WeaponCollection.Instance.getParams(weaponName));
+                m_currentWeaponSlot = m_weapons.Count - 1;
+                setCurrentWeapon();
+            }
+
+            Destroy(col.gameObject);
+        }
     }
 
     protected void setCurrentWeapon()
