@@ -48,6 +48,11 @@ public class Weapon : MonoBehaviour
         m_originalTransform = this.gameObject.transform.localPosition;
     }
 
+    void Update()
+    {
+        updateRecoil();
+    }
+
     // Update is called once per frame
     public void updateOrientation(Vector2 direction)
     {
@@ -171,6 +176,11 @@ public class Weapon : MonoBehaviour
         m_weaponRender.sprite = m_weaponParams.sprite;
         leftGrip.localPosition = new Vector3(m_weaponParams.leftHandleOffset.x, m_weaponParams.leftHandleOffset.y, leftGrip.position.z);
         rightGrip.localPosition = new Vector3(m_weaponParams.rightHandleOffset.x, m_weaponParams.rightHandleOffset.y, leftGrip.position.z);
+    }
+
+    public WeaponParams getCurrentWeapon()
+    {
+        return m_weaponParams;
     }
 
     IEnumerator MuzzleFlash()
