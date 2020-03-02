@@ -184,7 +184,7 @@ public class MoveAtPlayerNode : LeafNode<EnemyBehaviour>
     {
         m_currentWaypoint = 0;
         m_running = false;
-        m_shortDistance = 0.25f;
+        m_shortDistance = 0.18f;
         m_longDistance = 0.9f;
         m_previousNodes = new Stack<PlateformerPointNode>();
     } 
@@ -305,6 +305,8 @@ public class MoveAtPlayerNode : LeafNode<EnemyBehaviour>
 public class AimAtPlayerNode : LeafNode<EnemyBehaviour>
 {
 
+    private float m_range = 0.1f;
+
     public override ProcessResult process()
     {
         var currentPosition = m_tree.getModel().transform.position;
@@ -322,6 +324,8 @@ public class AimAtPlayerNode : LeafNode<EnemyBehaviour>
                 GameObject collider = hit.collider.gameObject;
                 if (collider.tag == "Player")
                 {
+                    Vector3 offset = new Vector3(Random.Range(-m_range, m_range), Random.Range(-m_range, m_range), 0.0f);
+                    shootingDirection = shootingDirection.normalized + offset;
                     shootingDirection = shootingDirection.normalized;
                     weapon.updateOrientation(shootingDirection);
                     weapon.requestShoot(shootingDirection);
