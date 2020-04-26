@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.Events;
 using UnityEngine;
 
-public class CustomizerData : MonoBehaviour
+public class CustomizerData
 {
-
     public List<string> availableMesheIds;
     public List<SpriteMesh> availableMeshes;
 
@@ -14,9 +13,11 @@ public class CustomizerData : MonoBehaviour
 
     private int m_currentIndex;
 
-    // Called before Start
-    private void OnEnable()
+    public CustomizerData(List<string> ids, List<SpriteMesh> spriteMeshes)
     {
+        availableMesheIds = ids;
+        availableMeshes = spriteMeshes;
+
         m_currentIndex = 0;
         meshChanged = new UnityEvent();
     }

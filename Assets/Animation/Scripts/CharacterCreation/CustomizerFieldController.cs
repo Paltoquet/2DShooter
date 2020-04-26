@@ -19,23 +19,36 @@ public class CustomizerFieldController : MonoBehaviour
         leftButton.onClick.AddListener(decrement);
         rightButton.onClick.AddListener(increment);
 
-        customizerData.meshDataChanged().AddListener(updateText);
+        if (customizerData != null){
+            customizerData.meshDataChanged().AddListener(updateText);
+        }
         updateText();
     }
 
     private void increment()
     {
-        customizerData.increment();
+        if (customizerData != null)
+        {
+            customizerData.increment();
+        }
     }
 
     private void decrement()
     {
-        customizerData.decrement();
+        if (customizerData != null)
+        {
+            customizerData.decrement();
+        }
     }
 
     private void updateText()
     {
-        var currentText = customizerData.getCurrentMeshId();
+        string currentText = "";
+        if (customizerData != null)
+        {
+            currentText = customizerData.getCurrentMeshId();
+        }
+
         text.text = currentText;
     }
 }
