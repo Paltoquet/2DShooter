@@ -11,7 +11,12 @@ public class CustomizerFieldController : MonoBehaviour
     public Button rightButton;
     public Text text;
 
-    public CustomizerData customizerData;
+    private List<CustomizerData> m_customizerDatas;
+
+    CustomizerFieldController()
+    {
+        m_customizerDatas = new List<CustomizerData>();
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -19,36 +24,53 @@ public class CustomizerFieldController : MonoBehaviour
         leftButton.onClick.AddListener(decrement);
         rightButton.onClick.AddListener(increment);
 
-        if (customizerData != null){
-            customizerData.meshDataChanged().AddListener(updateText);
+        foreach (var customizerData in m_customizerDatas) {
+            if (customizerData != null) {
+                customizerData.meshDataChanged().AddListener(updateText);
+            }
         }
+        updateText();
+    }
+
+    public void addCustomizerData(CustomizerData data)
+    {
+        m_customizerDatas.Add(data);
         updateText();
     }
 
     private void increment()
     {
-        if (customizerData != null)
+        foreach (var customizerData in m_customizerDatas)
         {
-            customizerData.increment();
+            if (customizerData != null)
+            {
+                customizerData.increment();
+            }
         }
     }
 
     private void decrement()
     {
-        if (customizerData != null)
+        foreach (var customizerData in m_customizerDatas)
         {
-            customizerData.decrement();
+            if (customizerData != null)
+            {
+                customizerData.decrement();
+            }
         }
     }
 
     private void updateText()
     {
         string currentText = "";
-        if (customizerData != null)
+        if (m_customizerDatas.Count > 0)
         {
-            currentText = customizerData.getCurrentMeshId();
+            var customizerData = m_customizerDatas[0];
+            if (customizerData != null)
+            {
+                currentText = customizerData.getCurrentMeshId();
+            }
         }
-
         text.text = currentText;
     }
 }
