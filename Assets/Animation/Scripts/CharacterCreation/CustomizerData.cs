@@ -44,9 +44,39 @@ public class CustomizerData
         return availableMeshes[m_currentIndex];
     }
 
+    public SpriteMesh getMesh(string meshId)
+    {
+        int index = getIndex(meshId);
+        SpriteMesh result = index >= 0 ? availableMeshes[index] : null;
+        return result;
+    }
+
+    public void update(string meshId)
+    {
+        int index = getIndex(meshId);
+        if(index > 0)
+        {
+            m_currentIndex = index;
+            meshDataChanged();
+        }
+    }
+
     public UnityEvent meshDataChanged()
     {
         return meshChanged;
     }
 
+    private int getIndex(string meshId)
+    {
+        int index = -1;
+        for (int i = 0; i < availableMesheIds.Count; i++)
+        {
+            var currentMeshId = availableMesheIds[i];
+            if (currentMeshId == meshId)
+            {
+                index = i;
+            }
+        }
+        return index;
+    }
 }

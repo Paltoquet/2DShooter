@@ -53,13 +53,12 @@ public class StyleCustomizer : MonoBehaviour
 
     public StyleCustomizer()
     {
-        collection = new StyleCollection();
+
     }
 
     private void Awake()
     {
-        collection.buildAssetsDescription();
-        collection.buildAssets();
+        collection = StyleCollection.getInstance();
 
         m_hoodDatas = collection.getCustomizerData(BodyPart.Hood);
         m_headDatas = collection.getCustomizerData(BodyPart.Head);
@@ -120,16 +119,35 @@ public class StyleCustomizer : MonoBehaviour
 
     public void parseRessourceFolder()
     {
-        collection = new StyleCollection();
-        collection.buildAssetsDescription();
+        
     }
 
-    public void changeHood()
+    private void OnDestroy()
+    {
+        foreach (var bodyPartAvailable in collection.getAvailableBodyParts())
+        {
+            var key = StyleCollection.bodyPartToString(bodyPartAvailable);
+            var spriteMeshDatas = collection.getCustomizerData(bodyPartAvailable);
+            var currentId = spriteMeshDatas.getCurrentMeshId();
+            PlayerPrefs.SetString(key, currentId);
+        }
+        collection.unloadAllAssets();
+    }
+
+
+    // -------------------------------------------------------- private methods --------------------------------------------------------
+
+    private void initializeDatas()
+    {
+
+    }
+
+    private void changeHood()
     {
         changeSpriteMesh(Hood, m_hoodDatas.getCurrentMesh());
     }
 
-    public void changeHat()
+    private void changeHat()
     {
         changeSpriteMesh(Head, m_headDatas.getCurrentMesh());
     }

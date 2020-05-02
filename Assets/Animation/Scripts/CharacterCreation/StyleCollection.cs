@@ -43,12 +43,15 @@ public class SpriteMeshDataDescription
     }
 }
 
-public class StyleCollection : MonoBehaviour
+public class StyleCollection
 {
     private string jsonPath = "Resouces/SpriteMesh/SpriteCollection.json";
 
-    private Dictionary<BodyPart, List<SpriteMeshDataDescription>> m_meshDescriptions;
+    private static StyleCollection m_instance = null;
+
+    private List<BodyPart> m_availableBodyParts;
     private Dictionary<BodyPart, AssetBundle> m_meshBundles;
+    private Dictionary<BodyPart, List<SpriteMeshDataDescription>> m_meshDescriptions;
     private Dictionary<BodyPart, CustomizerData> m_meshDatas;
     private Dictionary<BodyPart, string> m_bodyPartKey;
 
@@ -58,28 +61,38 @@ public class StyleCollection : MonoBehaviour
     {
         m_bodyPartKey = new Dictionary<BodyPart, string>();
 
+        m_availableBodyParts = new List<BodyPart>();
 
-        m_bodyPartKey[BodyPart.Head]        = bodyPartToString(BodyPart.Head).ToLower();
-        m_bodyPartKey[BodyPart.Hood]        = bodyPartToString(BodyPart.Hood).ToLower();
-        m_bodyPartKey[BodyPart.Torso]       = bodyPartToString(BodyPart.Torso).ToLower();
-        m_bodyPartKey[BodyPart.Pelvis]      = bodyPartToString(BodyPart.Pelvis).ToLower();
-        m_bodyPartKey[BodyPart.LShoulder]   = bodyPartToString(BodyPart.LShoulder).ToLower();
-        m_bodyPartKey[BodyPart.RShoulder]   = bodyPartToString(BodyPart.RShoulder).ToLower();
-        m_bodyPartKey[BodyPart.LElbow]      = bodyPartToString(BodyPart.LElbow).ToLower();
-        m_bodyPartKey[BodyPart.RElbow]      = bodyPartToString(BodyPart.RElbow).ToLower();
-        m_bodyPartKey[BodyPart.LWrist]      = bodyPartToString(BodyPart.LWrist).ToLower();
-        m_bodyPartKey[BodyPart.RWrist]      = bodyPartToString(BodyPart.RWrist).ToLower();
-        m_bodyPartKey[BodyPart.LLeg]        = bodyPartToString(BodyPart.LLeg).ToLower();
-        m_bodyPartKey[BodyPart.RLeg]        = bodyPartToString(BodyPart.RLeg).ToLower();
-        m_bodyPartKey[BodyPart.LBoot]       = bodyPartToString(BodyPart.LBoot).ToLower();
-        m_bodyPartKey[BodyPart.RBoot]       = bodyPartToString(BodyPart.RBoot).ToLower();
+        m_availableBodyParts.Add(BodyPart.Head);
+        m_availableBodyParts.Add(BodyPart.Hood);
+        m_availableBodyParts.Add(BodyPart.Torso);
+        m_availableBodyParts.Add(BodyPart.Pelvis);
+        m_availableBodyParts.Add(BodyPart.LShoulder);
+        m_availableBodyParts.Add(BodyPart.RShoulder);
+        m_availableBodyParts.Add(BodyPart.LElbow);
+        m_availableBodyParts.Add(BodyPart.RElbow);
+        m_availableBodyParts.Add(BodyPart.LWrist);
+        m_availableBodyParts.Add(BodyPart.RWrist);
+        m_availableBodyParts.Add(BodyPart.LLeg);
+        m_availableBodyParts.Add(BodyPart.RLeg);
+        m_availableBodyParts.Add(BodyPart.LBoot);
+        m_availableBodyParts.Add(BodyPart.RBoot);
+
+        foreach (var bodyPart in m_availableBodyParts)
+        {
+            m_bodyPartKey[bodyPart] = bodyPartToString(bodyPart).ToLower();
+        }
     }
 
-    // -------------------------------------------------------- abstract methods --------------------------------------------------------
-    // Start is called before the first frame update
-    void Start()
+    public static StyleCollection getInstance()
     {
-        //var fileContent = File.ReadAllText(path);
+        if(m_instance == null)
+        {
+            m_instance = new StyleCollection();
+            m_instance.buildAssetsDescription();
+            m_instance.buildAssets();
+        }
+        return m_instance;
     }
 
     // -------------------------------------------------------- public methods --------------------------------------------------------
@@ -90,20 +103,10 @@ public class StyleCollection : MonoBehaviour
         m_meshBundles = new Dictionary<BodyPart, AssetBundle>();
         string bundleAssetDirectory = Path.Combine(Application.dataPath, "AssetBundles", "spritemesh");
         
-        m_meshDescriptions[BodyPart.Head]       = loadDescriptions(BodyPart.Head,      bundleAssetDirectory);
-        m_meshDescriptions[BodyPart.Hood]       = loadDescriptions(BodyPart.Hood,      bundleAssetDirectory);
-        m_meshDescriptions[BodyPart.Torso]      = loadDescriptions(BodyPart.Torso,     bundleAssetDirectory);
-        m_meshDescriptions[BodyPart.Pelvis]     = loadDescriptions(BodyPart.Pelvis,    bundleAssetDirectory);
-        m_meshDescriptions[BodyPart.LShoulder]  = loadDescriptions(BodyPart.LShoulder, bundleAssetDirectory);
-        m_meshDescriptions[BodyPart.RShoulder]  = loadDescriptions(BodyPart.RShoulder, bundleAssetDirectory);
-        m_meshDescriptions[BodyPart.LElbow]     = loadDescriptions(BodyPart.LElbow,    bundleAssetDirectory);
-        m_meshDescriptions[BodyPart.RElbow]     = loadDescriptions(BodyPart.RElbow,    bundleAssetDirectory);
-        m_meshDescriptions[BodyPart.LWrist]     = loadDescriptions(BodyPart.LWrist,    bundleAssetDirectory);
-        m_meshDescriptions[BodyPart.RWrist]     = loadDescriptions(BodyPart.RWrist,    bundleAssetDirectory);
-        m_meshDescriptions[BodyPart.LLeg]       = loadDescriptions(BodyPart.LLeg,      bundleAssetDirectory);
-        m_meshDescriptions[BodyPart.RLeg]       = loadDescriptions(BodyPart.RLeg,      bundleAssetDirectory);
-        m_meshDescriptions[BodyPart.LBoot]      = loadDescriptions(BodyPart.LBoot,     bundleAssetDirectory);
-        m_meshDescriptions[BodyPart.RBoot]      = loadDescriptions(BodyPart.RBoot,     bundleAssetDirectory);
+        foreach(var bodyPart in m_availableBodyParts)
+        {
+            m_meshDescriptions[bodyPart] = loadDescriptions(bodyPart, bundleAssetDirectory);
+        }
 
         /*List<SpriteMeshDataDescription> sprites = new List<SpriteMeshDataDescription>();
         var setting = new JsonSerializerSettings();
@@ -146,20 +149,15 @@ public class StyleCollection : MonoBehaviour
     {
         m_meshDatas = new Dictionary<BodyPart, CustomizerData>();
 
-        m_meshDatas[BodyPart.Head]      = loadAssets(BodyPart.Head);
-        m_meshDatas[BodyPart.Hood]      = loadAssets(BodyPart.Hood);
-        m_meshDatas[BodyPart.Torso]     = loadAssets(BodyPart.Torso);
-        m_meshDatas[BodyPart.Pelvis]    = loadAssets(BodyPart.Pelvis);
-        m_meshDatas[BodyPart.LShoulder] = loadAssets(BodyPart.LShoulder);
-        m_meshDatas[BodyPart.RShoulder] = loadAssets(BodyPart.RShoulder);
-        m_meshDatas[BodyPart.LElbow]    = loadAssets(BodyPart.LElbow);
-        m_meshDatas[BodyPart.RElbow]    = loadAssets(BodyPart.RElbow);
-        m_meshDatas[BodyPart.LWrist]    = loadAssets(BodyPart.LWrist);
-        m_meshDatas[BodyPart.RWrist]    = loadAssets(BodyPart.RWrist);
-        m_meshDatas[BodyPart.LLeg]      = loadAssets(BodyPart.LLeg);
-        m_meshDatas[BodyPart.RLeg]      = loadAssets(BodyPart.RLeg);
-        m_meshDatas[BodyPart.LBoot]     = loadAssets(BodyPart.LBoot);
-        m_meshDatas[BodyPart.RBoot]     = loadAssets(BodyPart.RBoot);
+        foreach(var bodyPart in m_availableBodyParts)
+        {
+            m_meshDatas[bodyPart] = loadAssets(bodyPart);
+        }
+    }
+
+    public void unloadAllAssets()
+    {
+
     }
 
     public List<SpriteMeshDataDescription> loadDescriptions(BodyPart bodyPart, string bundleAssetDirectory)
@@ -209,6 +207,24 @@ public class StyleCollection : MonoBehaviour
     {
         return m_meshDatas[bodyPart];
     }
+
+    public List<BodyPart> getAvailableBodyParts()
+    {
+        return m_availableBodyParts;
+    }
+
+    public SpriteMesh getSpriteMesh(BodyPart bodyPart, string meshId)
+    {
+        var availableSprites = m_meshDatas[bodyPart];
+        return availableSprites.getMesh(meshId);
+    }
+
+    public void updateCustomizerData(BodyPart bodyPart, string meshId)
+    {
+        var availableDatas = m_meshDatas[bodyPart];
+        availableDatas.update(meshId);
+    }
+
     // -------------------------------------------------------- private Methods --------------------------------------------------------
     public static string bodyPartToString(BodyPart bodyPart)
     {

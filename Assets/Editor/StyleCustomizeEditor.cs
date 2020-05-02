@@ -21,7 +21,6 @@ public class StyleCustomizerEditor : Editor
         if (GUILayout.Button("Parse Folder"))
         {
             data.parseRessourceFolder();
-            data.changeHat();
         }
 
         /*GUILayout.Space(10f);
