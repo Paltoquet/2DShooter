@@ -8,4 +8,13 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/CharacterCreation.unity
+    guid: 6eca31de0c2142e48b3f7a09d8ecc49b
+  - enabled: 1
+    path: Assets/Scenes/LoginScreen.unity
+    guid: 9b643b704ad833e4e809b13d58b89420
+  - enabled: 1
+    path: Assets/Scenes/Main.unity
+    guid: d2e153afbed987b4abe05f2caa09557e
   m_configObjects: {}
