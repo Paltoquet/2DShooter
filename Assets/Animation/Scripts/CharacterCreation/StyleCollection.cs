@@ -45,8 +45,6 @@ public class SpriteMeshDataDescription
 
 public class StyleCollection
 {
-    private string jsonPath = "Resouces/SpriteMesh/SpriteCollection.json";
-
     private static StyleCollection m_instance = null;
 
     private List<BodyPart> m_availableBodyParts;
